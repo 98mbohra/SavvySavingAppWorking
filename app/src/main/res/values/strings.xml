@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">SavvySavingAppWorking</string>
+    <string name="welcome_to_savy_saving_app">Welcome To Savy Saving App</string>
+    <string name="please_select_your_4_digit_pin">Please Select Your 4 Digit Pin</string>
+    <string name="confirm">Confirm</string>
+    <string name="welcome_to_savvy">Welcome to Savvy</string>
+</resources>
