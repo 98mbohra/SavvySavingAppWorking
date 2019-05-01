@@ -9,9 +9,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SetIncomeActivity"></activity>
+        <activity android:name=".SavingSetup" />
+        <activity android:name=".FixedCostsSetup" />
+        <activity android:name=".CreatePinActivity" />
+        <activity android:name=".SetIncomeActivity" />
         <activity android:name=".HomeScreen" />
-        <activity android:name=".PinSetActivity">
+        <activity android:name=".PinEnterActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
