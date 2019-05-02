@@ -1,12 +1,19 @@
 package com.example.bohra.savvysavingappworking;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+
 import com.example.bohra.savvysavingappworking.Period;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Observable;
 
-public class Finance extends Observable
+public class Finance extends AppCompatActivity
 {
 
     public Finance()
@@ -21,8 +28,13 @@ public class Finance extends Observable
 
     }
 
-
-
+    @Override
+    protected void onCreate(Bundle saved)
+    {
+        super.onCreate(saved);
+        setContentView(R.layout.activity_home_screen);
+        DatabaseHelper db = new DatabaseHelper(this);
+    }
     private int income; //In finance db
     private Period incomePeriod; //In finance db
     private int fixedCosts; //in finance db
@@ -46,11 +58,12 @@ public class Finance extends Observable
     private ArrayList<FixedPayment> fixedPayments = new ArrayList<FixedPayment>(); //arraylist which is loaded from db
     private ArrayList<Saving> savings = new ArrayList<Saving>(); //filled from db
 
+    DatabaseHelper db = new DatabaseHelper(this);
+
     public void closingSequence(){
         /*
         This method will use submethods to clear each database return all arraylists to database
         Close connections and datafiles
-
          */
     }
 
@@ -62,7 +75,6 @@ public class Finance extends Observable
         Remind user that it is their responsibility to deduct funds when saving
         send data to db and files as recorded
         send user to first enter user pin screen
-
          */
     }
 
@@ -74,9 +86,17 @@ public class Finance extends Observable
 
 
 
-    public void fillSavings (){
-
-
+    public void fillSavings () throws ParseException {
+        SQLiteDatabase saving = db.getReadableDatabase();
+        Cursor c = saving.query("SAVING",new String[]{"AMOUNT","DATEMOVED"},null,null,null,null,null,null);
+        while (c.moveToNext())
+        {
+            int amount = Integer.parseInt(c.getString(0));
+            SimpleDateFormat fm = new SimpleDateFormat("yyyy-MM-dd" );
+            Date dateMoved = fm.parse(c.getString(1));      //???format of columnlndex:1 and pattern must be same
+            Saving s = new Saving(amount,dateMoved);
+            savings.add(s);
+        }
         /*
         This method connects to savings database, and iteratively loads all the saving records into the arraylist
          */
@@ -84,7 +104,20 @@ public class Finance extends Observable
 
     }
 
-    public void fillPurchases(){
+    public void fillPurchases() throws ParseException{
+        SQLiteDatabase purchase = db.getReadableDatabase();
+        Cursor c = purchase.query("PURCHASE",new String[]{"PURCHASETYPE","COMMENT","DATEOFPURCHASE","PURCHASEAMOUNT"},null,null,null,null,null,null);
+        while (c.moveToNext())
+        {
+            //String purchasetype = c.getString(0);
+            SpendingCategory purchasetype = SpendingCategory.valueOf(c.getString(0));
+            String comment = c.getString(1);
+            SimpleDateFormat fm = new SimpleDateFormat("yyyy-MM-dd" );
+            Date dateOfPurchase = fm.parse(c.getString(2));
+            int purchaseAmount = Integer.parseInt(c.getString(3));
+            Purchase p = new Purchase(purchasetype,comment,dateOfPurchase,purchaseAmount);
+            purchaseList.add(p);
+        }
         /*
         This method connects to purchase database and iteratively loads all purchase records into the arraylist
          */
@@ -92,8 +125,20 @@ public class Finance extends Observable
         //ERIC
     }
 
-    public void fillFixed()
+    public void fillFixed() throws ParseException
     {
+        SQLiteDatabase fillFixed = db.getReadableDatabase();
+        Cursor c = fillFixed.query("FIXEDPAYMENT",new String[]{"RECURRMENT","FIXEDCATEGORY","FIXEDAMOUNT","DATEOCCUR"},null,null,null,null,null,null);
+        while (c.moveToNext())
+        {
+            Period recurrment = Period.valueOf(c.getString(0));
+            SpendingCategory fixedCategory = SpendingCategory.valueOf(c.getString(1));
+            int fixedAmount = Integer.parseInt(c.getString(2));
+            SimpleDateFormat fm = new SimpleDateFormat("yyyy-MM-dd" );
+            Date dateOccur = fm.parse(c.getString(3));
+            FixedPayment f = new FixedPayment(recurrment,fixedCategory,fixedAmount);
+            fixedPayments.add(f);
+        }
         /*
         This Method connects to the fixed payment database and iteratively loads all fixed payments into the arraylist
          */
@@ -101,11 +146,23 @@ public class Finance extends Observable
         //ERIC
     }
 
-    public void fillFinance()
+    public void fillFinance() throws ParseException
     {
+        SQLiteDatabase fillFinance = db.getReadableDatabase();
+        Cursor c = fillFinance.query("FINANCE",new String[]{"INCOME","PERIOD","FIXEDCOSTS","SAVEPERIOD","SAVINGAMOUNT","SAVINGGOAL"},null,null,null,null,null,null);
+        while (c.moveToNext())
+        {
+            int income = Integer.parseInt(c.getString(0));
+            Period period = Period.valueOf(c.getString(1));
+            int fixedCosts = Integer.parseInt(c.getString(2));
+            String savePeriod = c.getString(3);
+            int savingAmount = Integer.parseInt(c.getString(4));
+            int savingGoal = Integer.parseInt(c.getString(5));
+
+            //??? then? create new finance on finance class?
+        }
         /*
         This method fills all other financial data from the finance database (income e.t.c.)
-
          */
         //ERIC
     }
@@ -154,7 +211,6 @@ public class Finance extends Observable
         /*
         This method checks the data of last saving contribution from saving.getLast() or whatever,
         and then uses the saving period and decides whether a saving needs to be made. If monthly it checks that next date is the second of month
-
         It deducts from the income.
          */
     }
@@ -168,25 +224,55 @@ public class Finance extends Observable
 
 
     public void closeSavings(){
+        SQLiteDatabase saving = db.getWritableDatabase();
+        saving.execSQL("DROP TABLE IF EXISTS SAVING");
+        saving.execSQL("CREATE TABLE IF NOT EXISTS SAVING(AMOUNT INTEGER, DATEMOVED DATE)");
+        for(Saving s:savings)
+        {
+            int amount = s.getAmount();
+            Date dateMoved = s.getDateMoved();
+            saving.execSQL("INSERT INTO SAVING (AMOUNT, DATEMOVED) VALUES(amount,dateMoved)");
+        }
         /*
         return arraylist savings to db
-
         //ERIC
          */
     }
 
     public void closePurchases(){
+        SQLiteDatabase purchase = db.getWritableDatabase();
+        purchase.execSQL("DROP TABLE IF EXISTS PURCHASE");
+        purchase.execSQL("CREATE TABLE IF NOT EXISTS PURCHASE(PURCHASETYPE VARCHAR(20), COMMENT VARCHAR(20), DATEOFPURCHASE DATE, PURCHASEAMOUNT INTEGER)");
+        for(Purchase p:purchaseList)
+        {
+            String purchaseType = p.getPurchaseType().toString();
+            String comment = p.getComment();
+            Date dateOfPurchase = p.getDateOfPurchase();
+            int purchaseAmount = p.getPurchaseAmount();
+            purchase.execSQL("INSERT INTO SAVING (PURCHASETYPE, COMMENT, DATEOFPURCHASE, PURCHASEAMOUNT) VALUES(purchaseType,comment,dateOfPurchase,purchaseAmount)");
+        }
         /*
         return arraylist purchases to db
-
         //ERIC
          */
     }
 
     public void closeFixedPayments(){
+        SQLiteDatabase fixedPayment = db.getWritableDatabase();
+        fixedPayment.execSQL("DROP TABLE IF EXISTS PURCHASE");
+        fixedPayment.execSQL("CREATE TABLE IF NOT EXISTS FIXEDPAYMENT(RECURRMENT VARCHAR(20), FIXEDCATEGORY VARCHAR(20),FIXEDAMOUNT INTEGER, DATEOCCUR DATE)");
+        for(FixedPayment f:fixedPayments)
+        {
+            String recurrment = f.getRecurrment().toString();
+            String fixedAtegory = f.getFixedCategory().toString();
+            int fixAmount = f.getFixedAmount();
+
+            // ???no getDateOccur() method
+            //fixedPayment.execSQL("INSERT INTO FIXEDPAYMENT () VALUES()");
+        }
+
         /*
         return arraylist fixedPayments to db
-
         //ERIC
          */
     }
@@ -194,7 +280,6 @@ public class Finance extends Observable
     public void closeFinances(){
         /*
         Return finance data to the db
-
         //ERIC
          */
     }
