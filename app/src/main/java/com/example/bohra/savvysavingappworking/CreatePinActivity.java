@@ -1,11 +1,18 @@
 package com.example.bohra.savvysavingappworking;
 
 import android.content.Intent;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class CreatePinActivity extends AppCompatActivity {
 
@@ -28,6 +35,8 @@ public class CreatePinActivity extends AppCompatActivity {
                 int pinSupply = Integer.parseInt(enterPinText.getText().toString());
                 //encryptSend(pinSupply);
 
+                IO io = new IO();
+                io.writeFile("pin.txt",enterPinText.getText().toString());
                 Intent incomeSetIntent = new Intent(getApplicationContext(), SetIncomeActivity.class);
 
 
@@ -56,6 +65,7 @@ public class CreatePinActivity extends AppCompatActivity {
 //    {
 //        //This method will take the value entered in the text field, encrypt it, and send it to the file.
 //    }
+
 
 
 }

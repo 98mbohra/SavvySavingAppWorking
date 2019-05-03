@@ -31,7 +31,7 @@ public class SetIncomeActivity extends AppCompatActivity {
                 Period incomePeriod = Period.valueOf(incomePeriodSpinner.getSelectedItem().toString());
 
 
-                if (income < budget)
+                if (income < budget) //period income and daily budget?
                 {
                     Toast budgetHighToast = Toast.makeText(getApplicationContext(), "Budget must be less than income!", Toast.LENGTH_SHORT);
                     budgetHighToast.show();
@@ -39,7 +39,12 @@ public class SetIncomeActivity extends AppCompatActivity {
                 else
                 {
                     //send income, budget, income period to db
-
+                    //ONLY IMCOME PERIOD = WEEK CAN WORK???
+                    IO io = new IO();
+                    String str = "income:"+income+"\n"+
+                            "incomePeriod:"+incomePeriodSpinner.getSelectedItem().toString()+"\n"+
+                            "budget:"+budget+"\n";
+                    io.writeFile("finance.txt",str);
                     Intent fixedCostsSetupIntent = new Intent(getApplicationContext(), FixedCostsSetup.class);
                     startActivity(fixedCostsSetupIntent);
                 }
