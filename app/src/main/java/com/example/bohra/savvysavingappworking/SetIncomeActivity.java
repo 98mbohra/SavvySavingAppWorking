@@ -39,6 +39,7 @@ public class SetIncomeActivity extends AppCompatActivity {
                 else
                 {
                     //send income, budget, income period to db
+
                     Intent fixedCostsSetupIntent = new Intent(getApplicationContext(), FixedCostsSetup.class);
                     startActivity(fixedCostsSetupIntent);
                 }
