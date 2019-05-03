@@ -1,6 +1,7 @@
 package com.example.bohra.savvysavingappworking;
 
 import android.content.Intent;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -9,6 +10,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.io.File;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -31,6 +34,23 @@ public class FixedCostsSetup extends AppCompatActivity {
             public void onClick(View v) {
 
                 //This method will run a method to send the arraylist to the db, it will then navigate to the saving set up page
+                String filename = "FixedCosts.txt";
+                File file = new File(Environment.getExternalStorageDirectory(),filename);
+                IO io = new IO();
+                String content = "";
+                for(FixedPayment f:fixedPayments)
+                {
+                    String recurrment = f.getRecurrment().toString()+"*";
+                    String fixedAtegory = f.getFixedCategory().toString()+"*";
+                    String fixAmount = String.valueOf(f.getFixedAmount())+"\n";
+
+                    content += recurrment += fixedAtegory +=fixAmount;
+
+                }
+                if(!file.exists()) io.writeFile(filename,content);
+                else io.writeFile(filename,content);
+
+
                 Intent savingSetupIntent = new Intent(getApplicationContext(), SavingSetup.class);
                 startActivity(savingSetupIntent);
             }

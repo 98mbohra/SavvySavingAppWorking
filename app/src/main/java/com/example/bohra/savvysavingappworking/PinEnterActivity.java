@@ -1,6 +1,8 @@
 package com.example.bohra.savvysavingappworking;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -8,6 +10,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class PinEnterActivity extends AppCompatActivity {
 
@@ -36,20 +46,20 @@ public class PinEnterActivity extends AppCompatActivity {
 
                 int pinNum = Integer.parseInt(pinNumber.getText().toString());
 
-
                 if (checkPinCode(pinNum) == 1)
                 {
-
                     //Will send user to the home screen
                     Intent startHomeScreenIntent = new Intent(getApplicationContext(), HomeScreen.class);
                     startActivity(startHomeScreenIntent);
                 }
+
                 if((checkPinCode(pinNum) != 1) && (attemptCounter == 1))
                 {
                     Toast deniedToast = Toast.makeText(getApplicationContext(), "Too many incorrect entries!", Toast.LENGTH_SHORT);
                     deniedToast.show();
                     finish();
                 }
+
                 if(checkPinCode(pinNum) != 1)
                 {
                     --attemptCounter;
@@ -59,7 +69,6 @@ public class PinEnterActivity extends AppCompatActivity {
                     pinNumber.setText("");
 
                 }
-
             }
         });
 
@@ -77,9 +86,13 @@ public class PinEnterActivity extends AppCompatActivity {
         });
     }
 
-    private static int checkPinCode(int suppliedPin) {
+    private int checkPinCode(int suppliedPin){
         //Functionality to load file and set get the pincode value
-        int pin = 2346; // this will become output of file io
+        //int pin = 2346; // this will become output of file io
+
+        //createFile("pin.txt","1111");
+        IO io = new IO();
+        int pin = Integer.parseInt(io.readPinFile("pin.txt"));
         int checker = 0;
         if (suppliedPin == pin) {
             checker = 1;
@@ -90,3 +103,5 @@ public class PinEnterActivity extends AppCompatActivity {
 
 
 }
+
+
