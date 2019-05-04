@@ -12,7 +12,7 @@ import android.widget.Toast;
 public class SetIncomeActivity extends AppCompatActivity {
 
     //in this class initialise the financeDB
-    //Send the income, budget and period to the financeDB
+    //Send the income, and period to the financeDB
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,21 +24,26 @@ public class SetIncomeActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 EditText incomeEdit = (EditText) findViewById(R.id.incomeEditText);
-                EditText budgetEdit = (EditText) findViewById(R.id.budgetEditText);
+
                 int income = Integer.parseInt(incomeEdit.getText().toString());
-                int budget = Integer.parseInt(budgetEdit.getText().toString());
+
                 Spinner incomePeriodSpinner = (Spinner)  findViewById(R.id.incomePeriodSpinner);
                 Period incomePeriod = Period.valueOf(incomePeriodSpinner.getSelectedItem().toString());
 
 
-                if (income < budget)
+                if (income== 0)
                 {
-                    Toast budgetHighToast = Toast.makeText(getApplicationContext(), "Budget must be less than income!", Toast.LENGTH_SHORT);
+                    Toast budgetHighToast = Toast.makeText(getApplicationContext(), "You must enter your income!", Toast.LENGTH_SHORT);
                     budgetHighToast.show();
                 }
                 else
                 {
-                    //send income, budget, income period to db
+                    //send income, budget, income period to file
+
+                    IO io = new IO();
+                    String str = "income:"+income+"\n"+
+                            "incomePeriod:"+incomePeriodSpinner.getSelectedItem().toString()+"\n";
+                    io.writeFile("finance.txt",str);
 
                     Intent fixedCostsSetupIntent = new Intent(getApplicationContext(), FixedCostsSetup.class);
                     startActivity(fixedCostsSetupIntent);

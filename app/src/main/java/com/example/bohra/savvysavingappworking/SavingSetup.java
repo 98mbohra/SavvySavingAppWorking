@@ -50,7 +50,7 @@ public class SavingSetup extends AppCompatActivity {
                 }
                 else
                 {
-                    Intent goToHome = new Intent(getApplicationContext(), HomeScreen.class);
+                    Intent goToHome = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(goToHome);
                     //send goal amount, pledge amount, period value to db
 

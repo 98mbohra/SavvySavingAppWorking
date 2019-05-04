@@ -1,6 +1,7 @@
 package com.example.bohra.savvysavingappworking;
 
 import android.content.Intent;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -8,6 +9,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.File;
 
 public class PinEnterActivity extends AppCompatActivity {
 
@@ -36,21 +39,28 @@ public class PinEnterActivity extends AppCompatActivity {
 
                 int pinNum = Integer.parseInt(pinNumber.getText().toString());
 
+                if(checkPinCode(pinNum) == 2)
+                {
+                    Toast setupToast = Toast.makeText(getApplicationContext(), "You haven't set up yet!", Toast.LENGTH_SHORT);
+                    setupToast.show();
 
+                    Intent createPinIntent = new Intent(getApplicationContext(), CreatePinActivity.class);
+                    startActivity(createPinIntent);
+                }
                 if (checkPinCode(pinNum) == 1)
                 {
 
                     //Will send user to the home screen
-                    Intent startHomeScreenIntent = new Intent(getApplicationContext(), HomeScreen.class);
+                    Intent startHomeScreenIntent = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(startHomeScreenIntent);
                 }
-                if((checkPinCode(pinNum) != 1) && (attemptCounter == 1))
+                if((checkPinCode(pinNum) == 0) && (attemptCounter == 1))
                 {
                     Toast deniedToast = Toast.makeText(getApplicationContext(), "Too many incorrect entries!", Toast.LENGTH_SHORT);
                     deniedToast.show();
                     finish();
                 }
-                if(checkPinCode(pinNum) != 1)
+                if(checkPinCode(pinNum) == 0)
                 {
                     --attemptCounter;
                     Toast invalidToast = Toast.makeText(getApplicationContext(), "Please enter a valid PIN!", Toast.LENGTH_SHORT);
@@ -77,9 +87,21 @@ public class PinEnterActivity extends AppCompatActivity {
         });
     }
 
-    private static int checkPinCode(int suppliedPin) {
+    private int checkPinCode(int suppliedPin){
         //Functionality to load file and set get the pincode value
-        int pin = 2346; // this will become output of file io
+        //int pin = 2346; // this will become output of file io
+
+
+        IO io = new IO();
+
+
+
+
+        if(io.checkFileExists("pin.txt") != 1){
+            return 2;
+        }
+
+        int pin = Integer.parseInt(io.readPinFile("pin.txt"));
         int checker = 0;
         if (suppliedPin == pin) {
             checker = 1;
@@ -87,6 +109,8 @@ public class PinEnterActivity extends AppCompatActivity {
 
         return checker;
     }
+
+
 
 
 }

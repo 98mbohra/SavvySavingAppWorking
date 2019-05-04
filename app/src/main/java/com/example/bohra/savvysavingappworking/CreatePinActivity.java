@@ -6,8 +6,16 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class CreatePinActivity extends AppCompatActivity {
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,11 +30,14 @@ public class CreatePinActivity extends AppCompatActivity {
             public void onClick(View v) {
 
 
-
                 EditText enterPinText = (EditText) findViewById(R.id.enterPinText);
 
-                int pinSupply = Integer.parseInt(enterPinText.getText().toString());
-                //encryptSend(pinSupply);
+
+                //int pinSupply = Integer.parseInt(enterPinText.getText().toString());
+
+
+                IO io = new IO();
+                io.writeFile("pin.txt",enterPinText.getText().toString());
 
                 Intent incomeSetIntent = new Intent(getApplicationContext(), SetIncomeActivity.class);
 
@@ -47,15 +58,14 @@ public class CreatePinActivity extends AppCompatActivity {
                 startActivity(returnPinEnterActivity);
             }
         });
-
-
-
     }
 
-//    public static void encryptSend(int pin)
-//    {
-//        //This method will take the value entered in the text field, encrypt it, and send it to the file.
-//    }
+
+
+
+
+
+
 
 
 }
