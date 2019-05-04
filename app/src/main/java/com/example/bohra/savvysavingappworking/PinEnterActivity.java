@@ -53,6 +53,8 @@ public class PinEnterActivity extends AppCompatActivity {
                     startActivity(startHomeScreenIntent);
                 }
 
+//THIS does not work. It crashes the application rather than showing this error message.
+
                 if((checkPinCode(pinNum) != 1) && (attemptCounter == 1))
                 {
                     Toast deniedToast = Toast.makeText(getApplicationContext(), "Too many incorrect entries!", Toast.LENGTH_SHORT);
@@ -86,11 +88,14 @@ public class PinEnterActivity extends AppCompatActivity {
         });
     }
 
+    //Eric could you please try get the encryption working on this method. The encrypted code variable is io.pinDecrypt in the IO class.
+    //It needs to check the value of the pin file and divide by the io.pinDecrypt integer. Thanks
     private int checkPinCode(int suppliedPin){
         //Functionality to load file and set get the pincode value
         //int pin = 2346; // this will become output of file io
 
         //createFile("pin.txt","1111");
+
         IO io = new IO();
         int pin = Integer.parseInt(io.readPinFile("pin.txt"));
         int checker = 0;
